@@ -3,10 +3,10 @@ import pandas as pd
 
 # utility funcation for configuration, simulation, storing 
 
-def create_reward_probs(n_action,trials_block,total_trails,p_option):
-    reward_probs = np.zeros(shape=(n_action,total_trails))
+def create_reward_probs(n_action,trials_block,total_trials,p_option):
+    reward_probs = np.zeros(shape=(n_action,total_trials))
     
-    for b in range(int(total_trails/trials_block)):
+    for b in range(int(total_trials/trials_block)):
         
         start = b*trials_block
         end = (b+1)*trials_block
