@@ -17,27 +17,31 @@ def q_pred(df,parameters):
     beta = parameters[1]
 
     # initialize q-values and preservation
-    q = np.zeros(2)
+    qvals = np.zeros((num_of_trials,2))
 
     for t in range(num_of_trials):
             
-        if t%100 == 0:
-            q = np.zeros(2)
+        if t%100 == 0: # start of a new block 
+            # reset q-values
+            qvals[t,0] = 0
+            qvals[t,1] = 0
         
         # set up data
         choice = action_list[t]
         reward = reward_list[t]
 
         # decision
-        p = np.exp( beta*q ) / np.sum( np.exp( beta * q ) )  
+        p = np.exp( beta*qvals[t] ) / np.sum( np.exp( beta * qvals[t] ) )
         choice_epred[t] = p[1]
 
-        # value update
-        prediction_error = reward - q[choice] 
-        q[choice] = q[choice] + alpha*prediction_error 
+        # value update (unless we're on the last trial)
+        if t != (num_of_trials - 1):
+            prediction_error = reward - qvals[t,choice] 
+            qvals[t+1,choice] = qvals[t,choice] + alpha*prediction_error
+            qvals[t+1,1-choice] = qvals[t,1-choice] # the q-value of the unchosen action stays the same
 
     # auc computation
     auc = roc_auc_score(action_list, choice_epred)
            
-    return auc, choice_epred 
+    return auc, choice_epred, qvals
     
